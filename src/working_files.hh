@@ -15,6 +15,7 @@ namespace ccls {
 struct WorkingFile {
   int64_t timestamp = 0;
   int version = 0;
+  int refCount = 0;
   std::string filename;
 
   std::string buffer_content;

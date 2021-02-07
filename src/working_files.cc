@@ -377,6 +377,7 @@ WorkingFile *WorkingFiles::onOpen(const TextDocumentItem &open) {
     wf->onBufferContentUpdated();
   } else {
     wf = std::make_unique<WorkingFile>(path, content);
+    wf->refCount++;
   }
   return wf.get();
 }
@@ -422,7 +423,13 @@ void WorkingFiles::onChange(const TextDocumentDidChangeParam &change) {
 
 void WorkingFiles::onClose(const std::string &path) {
   std::lock_guard lock(mutex);
-  files.erase(path);
+  auto &wf = files[path];
+  if (wf) {
+    wf->refCount--;
+    if (wf->refCount<=0) {
+      files.erase(path);
+    }
+  }
 }
 
 // VSCode (UTF-16) disagrees with Emacs lsp-mode (UTF-8) on how to represent

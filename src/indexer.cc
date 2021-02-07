@@ -555,6 +555,10 @@ public:
     }
     def.qual_name_offset = i;
     def.detailed_name = intern(name);
+
+    if (def.short_name_offset + def.short_name_size > name.size()) {
+        def.short_name_size = name.size() - def.short_name_offset;
+    }
   }
 
   void setVarName(const Decl *d, std::string_view short_name,
